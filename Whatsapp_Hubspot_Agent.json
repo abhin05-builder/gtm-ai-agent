@@ -1,0 +1,362 @@
+{
+  "name": "Whatsapp_Hubspot_Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.data.body }}",
+        "options": {
+          "systemMessage": "You are a HubSpot Lead Assistant. You must follow a Zero-Partial-Execution policy.\n\nSTRICT RULES:\n\n    You are strictly forbidden from using the 'Agent_Workflow_Hubspot' tool until you have gathered ALL 5 pieces of information: Company Name, Contact Name, Email, Phone Number, and Deal Amount.\n\n    If any piece is missing, ask for it politely. Do not guess the Amount and do not run the workflow with null values.\n\n    Once you have all data, summarize it for the user and ask: 'I have all the details ready. Should I proceed with creating the records in HubSpot?'\n\n    Only execute the tool after the user says 'Yes' or 'Proceed'.\n\nDEAL STAGES:\n\n    'Meeting booked' -> appointmentscheduled\n\n    'Ready to buy' -> qualifiedtobuy\n\n    'Demo scheduled' -> presentationscheduled\"\n\nDATA COLLECTION RULES.\n\n    Deal Name Logic: Always format the deal_name as [Company Name] - New Business. Do not ask the user for a deal name; generate it automatically using this pattern.\n\n   Make sure that the Phone number is in correct format for respective country (ie 10 digit phone number for India) and email address format is valid. If not, ask user to correct this.\n\n    Deal Value Strictness: You must explicitly ask the user for the deal value or amount. If the user confirms they don't have one or if they leave it blank after being asked, only then default the value to 0.\n\n    Validation: Never use a company name or person's name as a deal_value. It must be a numeric string.\n\nAlways respond to the user in a natural, helpful conversational tone. Only use technical formats if specifically asked.\n\nAfter writing contact details to HubSpot, always ask:\n\"Would you like to send a personalized image to [Contact Name]?\"\nIf yes, run the 'image_generator' tool. Otherwise do not run 'image_generator' tool in in any other circumstances.\n\nCRITICAL TOOL RULE: When calling any tool, you must format the arguments as a pristine, valid JSON object. Never wrap the internal keys or values in parentheses (). Do not output '{( \"key\": \"value\" )}'. Output only pure JSON format: '{ \"key\": \"value\" }'."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "63eef053-74d8-4daf-b62c-300b6deeffc2",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "description": "CRITICAL: This tool has a 'Hard Gate.' You are strictly forbidden from executing this tool if ANY of the following inputs are missing: company_name, contact_name, contact_email, contact_phone, or deal_value. If a value is missing, you MUST ask the user for it and wait for their response. Do not use placeholders like 'N/A' or guess the amount.\n",
+        "workflowId": {
+          "__rl": true,
+          "value": "TeO6R3IwzMgT74qZ",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/TeO6R3IwzMgT74qZ",
+          "cachedResultName": "Agent_Workflow_Hubspot"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "company_name": "={{ $fromAI(\"company_name\", \"The name of the business or company\") }}",
+            "contact_name": "={{ $fromAI(\"contact_name\", \"The full name of the contact person\") }}",
+            "contact_phone": "={{ $fromAI(\"contact_phone\", \"The phone number of the contact\") }}",
+            "contact_email": "={{ $fromAI(\"contact_email\", \"The email address of the contact\") }}",
+            "deal_name": "={{ $fromAI(\"deal_name\", \"The deal name\") }}",
+            "deal_stage": "={{ $fromAI(\"deal_stage\", \"The current status or stage of the deal\") }}",
+            "deal_value": "={{ $fromAI(\"deal_value\", \"The numeric value of the deal. ONLY numbers are allowed. If the user hasn't given a price, you must ask them for it.\") }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "company_name",
+              "displayName": "company_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "contact_name",
+              "displayName": "contact_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "contact_phone",
+              "displayName": "contact_phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "contact_email",
+              "displayName": "contact_email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "deal_name",
+              "displayName": "deal_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "deal_stage",
+              "displayName": "deal_stage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "deal_value",
+              "displayName": "deal_value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        368,
+        208
+      ],
+      "id": "99c5b468-3ebf-49c1-aa7c-f8141c90bc7a",
+      "name": "Call 'Agent_Workflow_Hubspot'"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.data.from }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        208
+      ],
+      "id": "3e1a35b5-e250-410a-9d97-27404a8fb1aa",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        80,
+        208
+      ],
+      "id": "3815f44a-637c-4d52-95e3-d1d8f834b359",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "njiSfEhxb1k7cAjr",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "3LvDWyD3semhlzOy",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/3LvDWyD3semhlzOy",
+          "cachedResultName": "image_generator"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "company_name": "={{ $fromAI(\"company_name\", \"The name of the business or company\") }}",
+            "contact_name": "={{ $fromAI(\"contact_name\", \"The full name of the contact person\") }}",
+            "contact_email": "={{ $fromAI(\"contact_email\", \"The email address of the contact\") }}",
+            "image_description": "={{ $fromAI(\"image_description\", \"The description of the image shared by user\") }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "image_description",
+              "displayName": "image_description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "contact_name",
+              "displayName": "contact_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "contact_email",
+              "displayName": "contact_email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "company_name",
+              "displayName": "company_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        464,
+        304
+      ],
+      "id": "1d652ecf-6773-4ab3-b24a-23cea96224ee",
+      "name": "Call 'image_generator'"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "com.twilio.messaging.inbound-message.received"
+        ]
+      },
+      "type": "n8n-nodes-base.twilioTrigger",
+      "typeVersion": 1,
+      "position": [
+        16,
+        0
+      ],
+      "id": "7ae67c5d-8845-4fe7-946b-3627c6b97607",
+      "name": "Twilio Trigger",
+      "webhookId": "75650fa5-658c-4886-9a09-d96a9bbe8e17",
+      "credentials": {
+        "twilioApi": {
+          "id": "7nNHXIRUrfrbTTuw",
+          "name": "Twilio account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "from": "={{ $('Twilio Trigger').item.json.data.to }}",
+        "to": "={{ $('Twilio Trigger').item.json.data.from }}",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        560,
+        0
+      ],
+      "id": "4e2080cc-38e0-438b-bbc1-b34505759735",
+      "name": "Send an SMS/MMS/WhatsApp message",
+      "credentials": {
+        "twilioApi": {
+          "id": "7nNHXIRUrfrbTTuw",
+          "name": "Twilio account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Call 'Agent_Workflow_Hubspot'": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send an SMS/MMS/WhatsApp message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'image_generator'": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Twilio Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "52919639-c25e-42c3-bfd6-d66f98f19e24",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ed8310090af8925fb46d87f3301a30ca4f332849b0a62206f211811bf475f1c6"
+  },
+  "id": "46zdPbD3G07nNxMO",
+  "tags": []
+}
