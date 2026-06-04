@@ -1,0 +1,295 @@
+{
+  "name": "image_generator",
+  "nodes": [
+    {
+      "parameters": {
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        16,
+        0
+      ],
+      "id": "9bb380d3-a879-44da-826b-800108370acf",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Yi5JJMXG7DhXmfUU",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "image_description"
+            },
+            {
+              "name": "contact_name"
+            },
+            {
+              "name": "contact_email"
+            },
+            {
+              "name": "company_name"
+            },
+            {
+              "name": "language_type"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -288,
+        0
+      ],
+      "id": "20ed7efd-f347-4485-bfbe-ee78bd2c09df",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "url": "=https://res.cloudinary.com/dkp5n7ytk/image/upload/b_rgb:000000,o_40/l_text:Arial_90_bold_center:Welcome {{ $json.contact_name }},w_1800,c_fit,co_white,g_center,y_-250/l_text:Arial_90_bold_center:to the future of Work,w_1800,c_fit,co_white,g_center,y_-100/l_text:Arial_70:from Origin Inc,co_white,g_center,y_150/Firefly_Gemini_Flash_remove_the_text_HIC_216946_i64hfh.png",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -128,
+        0
+      ],
+      "id": "9d6a3f75-a9c2-43f2-8057-a56226ddc6e6",
+      "name": "HTTP Request1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "FZTUz8wcXUXKwTGE",
+          "name": "Header Auth account"
+        },
+        "httpBasicAuth": {
+          "id": "QdPsCY2YFSqOWmUf",
+          "name": "Unnamed credential 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('HTTP Request1').item.json.contact_email }}",
+        "subject": "={{ $('HTTP Request1').item.json.contact_name }}, follow up to our meeting! ",
+        "message": "=<p>Hi {{ $('HTTP Request1').item.json.contact_name }},</p> \n<p>It was fantastic meeting you! Here's a follow up to our meeting:</p> \n<br> \n<img src=\"https://res.cloudinary.com/dkp5n7ytk/image/upload/b_rgb:000000,o_40/l_text:Arial_90_bold_center:Welcome {{ $('HTTP Request1').item.json.contact_name.replace(/ /g, '%2520') }},w_1800,c_fit,co_white,g_center,y_-250/l_text:Arial_90_bold_center:to%2520the%2520future%2520of%2520Work,w_1800,c_fit,co_white,g_center,y_-100/l_text:Arial_70:from%2520Origin%2520Inc,co_white,g_center,y_150/Firefly_Gemini_Flash_remove_the_text_HIC_216946_i64hfh.png\" alt=\"Welcome Graphic\" width=\"600\">\n\n<h3><strong>Why Origin Inc. is the Right Partner for Your Journey</strong></h3>\n\n<p>In analyzing your current scale parameters, we recognize that maximizing cross-functional velocity while maintaining organizational governance is critical. Here is how Origin Inc. aligns with your core initiatives to drive sustainable business outcomes:</p>\n\n<ul>\n    <li><strong>Sustained Capability Modeling:</strong> We eliminate manual capacity friction, empowering your teams to focus on high-impact strategic delivery.</li>\n    <li><strong>Enterprise-Grade Synergy & Scale:</strong> Our framework seamlessly integrates into your existing technical architecture, ensuring a fast time-to-value loop.</li>\n    <li><strong>Data-Driven Enablement Pathways:</strong> We convert raw operational volume into predictable performance metrics, giving leadership clear visibility into execution health.</li>\n</ul>\n\n<p>We are fully committed to providing the infrastructure, execution frameworks, and deep domain expertise required to future-proof your workflows and accelerate your strategic timeline.</p>\n\n<p>Let’s schedule a brief 15-minute sync next week to review our scientific volume-of-effort model and discuss how we can customize this roadmap to your exact operational benchmarks.</p>\n\n<p>Best regards,</p>\n<p><strong>The Origin Inc Team</strong><br>\n<font size=\"2\" color=\"gray\">Enterprise Automation & GTM Strategy Hub</font></p>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        160,
+        0
+      ],
+      "id": "5eaad131-c738-44b6-8ef1-76f8b95dd671",
+      "name": "Send a message",
+      "webhookId": "55733185-71cd-4b66-84b1-7c43591807a7",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "lufizzIV8dvuk9kD",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "speech",
+        "voice": {
+          "__rl": true,
+          "value": "={{ \n  String($('HTTP Request1').item.json.language_type).toLowerCase().includes('ta')\n  ? 'RzpQKXpoXN5pFySyBgaN'\n  : String($('HTTP Request1').item.json.language_type).toLowerCase().includes('hi')\n  ? 'UwinnZHBDsUvOmr8j0ez'\n  : 't7YonCKPYd564xPGqVF5'\n}}",
+          "mode": "id"
+        },
+        "text": "={{ \n  String($('HTTP Request1').item.json.language_type).toLowerCase().includes('ta')\n  ? `வணக்கம் ${$('HTTP Request1').item.json.contact_name}, இன்று உங்களை சந்தித்ததில் மிக்க மகிழ்ச்சி.`\n  : String($('HTTP Request1').item.json.language_type).toLowerCase().includes('hi')\n  ? `नमस्ते ${$('HTTP Request1').item.json.contact_name}, आज आपसे मिलकर बहुत अच्छा लगा।`\n  : `Hi ${$('HTTP Request1').item.json.contact_name}, it was great meeting you today.`\n}}",
+        "additionalOptions": {
+          "model": {
+            "__rl": true,
+            "value": "eleven_multilingual_v2",
+            "mode": "list",
+            "cachedResultName": "Eleven Multilingual v2"
+          }
+        },
+        "requestOptions": {}
+      },
+      "type": "@elevenlabs/n8n-nodes-elevenlabs.elevenLabs",
+      "typeVersion": 1,
+      "position": [
+        320,
+        0
+      ],
+      "id": "9bb25f04-f492-4e7e-bf20-4c1ee451121d",
+      "name": "Convert text to speech",
+      "credentials": {
+        "elevenLabsApi": {
+          "id": "5D2hKB7ZiWWnetXd",
+          "name": "ElevenLabs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "uploadFile",
+        "resource_type_file": "video",
+        "additionalFieldsFile": {}
+      },
+      "type": "n8n-nodes-cloudinary.cloudinary",
+      "typeVersion": 1,
+      "position": [
+        528,
+        0
+      ],
+      "id": "9316a2dd-7698-46ab-a7c6-33a85aec4f55",
+      "name": "Upload an asset from file data",
+      "credentials": {
+        "cloudinaryApi": {
+          "id": "BLmdZKvKOPsO0Ag9",
+          "name": "Cloudinary account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "from": "+14155238886",
+        "to": "+919884357795",
+        "toWhatsapp": true,
+        "message": "=Hi {{ $('HTTP Request1').item.json.contact_name }},It was fantastic meeting you! Here's a follow up to our meeting:  Why Origin Inc. is the Right Partner for Your Journey  In analyzing your current scale parameters, we recognize that maximizing cross-functional velocity while maintaining organizational governance is critical. Here is how Origin Inc. aligns with your core initiatives to drive sustainable business outcomes:  - Sustained Capability Modeling: We eliminate manual capacity friction, empowering your teams to focus on high-impact strategic delivery. - Enterprise-Grade Synergy & Scale: Our framework seamlessly integrates into your existing technical architecture, ensuring a fast time-to-value loop. - Data-Driven Enablement Pathways:We convert raw operational volume into predictable performance metrics, giving leadership clear visibility into execution health.  Let’s schedule a brief 15-minute sync next week to review our scientific volume-of-effort model and discuss how we can customize this roadmap to your exact operational benchmarks.\n\n{{ $('Upload an asset from file data').item.json.secure_url.replace('.mp3', '.ogg') }}",
+        "options": {
+          "statusCallback": ""
+        }
+      },
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "id": "76e472c3-c9b1-47c4-a176-f79f80e4e984",
+      "name": "Send an SMS/MMS/WhatsApp message",
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "credentials": {
+        "twilioApi": {
+          "id": "7nNHXIRUrfrbTTuw",
+          "name": "Twilio account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "image_description": null,
+          "contact_name": "Abhinaya Ravi",
+          "contact_email": "abhin05@gmail.com",
+          "company_name": null,
+          "language_type": "tamil"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Convert text to speech",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert text to speech": {
+      "main": [
+        [
+          {
+            "node": "Upload an asset from file data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload an asset from file data": {
+      "main": [
+        [
+          {
+            "node": "Send an SMS/MMS/WhatsApp message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send an SMS/MMS/WhatsApp message": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "7b801de9-38ff-41a6-acb7-17344b90010c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ed8310090af8925fb46d87f3301a30ca4f332849b0a62206f211811bf475f1c6"
+  },
+  "id": "3LvDWyD3semhlzOy",
+  "tags": []
+}
