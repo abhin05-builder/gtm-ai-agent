@@ -16,7 +16,7 @@ A conversational automation pipeline where a sales rep types prospect details na
 2. **n8n workflow triggers** via Twilio/WhatsApp Business API
 3. **Data is validated and structured** automatically
 4. **HubSpot API creates** Company + Contact + Deal records in one chained call
-5. **Personalized email fires** instantly to the prospect with AI-generated content
+5. **Personalized image, audio, email, whatsApp content fires** instantly to the prospect with AI-generated content
 6. **Record saved to Google Drive** for team visibility
 
 ## Tech Stack
@@ -27,6 +27,7 @@ A conversational automation pipeline where a sales rep types prospect details na
 | Messaging | Twilio + WhatsApp Business API |
 | CRM | HubSpot API (Companies, Contacts, Deals) |
 | Image Generation | Adobe Firefly + Cloudinary |
+| Audio Generation | ElevenLabs |
 | Storage | Google Drive API |
 | Infrastructure | Oracle Cloud VM (zero cost) |
 
