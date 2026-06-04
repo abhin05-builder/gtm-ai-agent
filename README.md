@@ -33,7 +33,7 @@ A conversational automation pipeline where a sales rep types prospect details na
 
 ## What's in This Repo
 
-- `gtm-agent-workflow.json` — Full n8n workflow export. Import directly into any n8n instance to run the pipeline.
+- `Whatsapp_Hubspot_Agent.json` — Full n8n workflow export. Import directly into any n8n instance to run the pipeline.
 
 ## Live Demo
 
